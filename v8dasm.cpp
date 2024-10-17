@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 
 	isolate = Isolate::New(p);
 	{
-		v8::Isolate::Scope isolate_scope(isolate);
+		v8::Isolate::Scope isolate_scope(isolate); // 原仓库没有这行代码，导致报错
 		v8::HandleScope scope(isolate);
 		auto ctx = v8::Context::New(isolate);
 		Context::Scope context_scope(ctx);
