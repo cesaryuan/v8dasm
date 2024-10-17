@@ -94,10 +94,12 @@ int main(int argc, char* argv[])
 		auto ctx = v8::Context::New(isolate);
 		Context::Scope context_scope(ctx);
 
+		// disassemble jsc in argv[1]
 		std::vector<char> data;
 		readAllBytes(argv[1], data);
 		runBytecode((uint8_t*)data.data(), data.size());
 
+		// compile and disassemble example.js
 		// std::vector<char> code;
 		// readAllBytes("example.js", code);
 		// code.push_back('\0');
