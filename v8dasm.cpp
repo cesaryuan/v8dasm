@@ -5,18 +5,6 @@
 #include <v8.h>
 #include <cmath>
 
-#pragma comment(lib, "v8_libbase.lib")
-#pragma comment(lib, "v8_libplatform.lib")
-#pragma comment(lib, "wee8.lib")
-
-#pragma comment(lib, "secur32.lib")
-#pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "dmoguids.lib")
-#pragma comment(lib, "wmcodecdspuuid.lib")
-#pragma comment(lib, "msdmo.lib")
-#pragma comment(lib, "Strmiids.lib")
-#pragma comment(lib, "DbgHelp.lib")
-
 using namespace v8;
 
 static Isolate* isolate = nullptr;
