@@ -2,3 +2,5 @@
 /build
 /.idea
 isolate-*.log
+cmake-build-*/
+example.js

@@ -52,7 +52,7 @@ static void runBytecode(uint8_t* bytecodeBuffer, int len) {
 	auto cached_data = new ScriptCompiler::CachedData(bytecodeBuffer, len);
 
 	// Create dummy source.
-	ScriptOrigin origin(String::NewFromUtf8Literal(isolate, "code.jsc"));
+	ScriptOrigin origin(isolate, String::NewFromUtf8Literal(isolate, "code.jsc"));
 	ScriptCompiler::Source source(String::NewFromUtf8(isolate, code).ToLocalChecked(), origin, cached_data);
 
 	// Compile code from code cache to print disassembly.
@@ -73,11 +73,11 @@ static void readAllBytes(const std::string& file, std::vector<char>& buffer) {
 	}
 }
 
-int main1(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	// Set flags here, flags that affects code generation and seririalzation should be same as the target program.
 	// You can add other flags freely because flag hash will be overrided in fixBytecode().
-	v8::V8::SetFlagsFromString("--no-lazy --no-flush-bytecode --log-all --no-verify-snapshot-checksum");
+	v8::V8::SetFlagsFromString("--no-lazy --no-flush-bytecode");
 
 	v8::V8::InitializeICU();
 	auto plat = v8::platform::NewDefaultPlatform();
@@ -89,6 +89,7 @@ int main1(int argc, char* argv[])
 
 	isolate = Isolate::New(p);
 	{
+		v8::Isolate::Scope isolate_scope(isolate);
 		v8::HandleScope scope(isolate);
 		auto ctx = v8::Context::New(isolate);
 		Context::Scope context_scope(ctx);
@@ -96,42 +97,12 @@ int main1(int argc, char* argv[])
 		std::vector<char> data;
 		readAllBytes(argv[1], data);
 		runBytecode((uint8_t*)data.data(), data.size());
+
+		// std::vector<char> code;
+		// readAllBytes("example.js", code);
+		// code.push_back('\0');
+		// auto cdata = compileCode(code.data());
+		// runBytecode(const_cast<uint8_t*>(cdata->data), cdata->length);
 	}
 	return 0;
-}
-
-int main(int argc, char* argv[]) {
-	v8::V8::SetFlagsFromString("--no-lazy --no-flush-bytecode --log-all");
-    // Initialize V8.
-    v8::V8::InitializeICUDefaultLocation(argv[0]);
-    v8::V8::InitializeExternalStartupData(argv[0]);
-    std::unique_ptr<v8::Platform> platform = v8::platform::NewDefaultPlatform();
-    v8::V8::InitializePlatform(platform.get());
-    v8::V8::Initialize();
-    // Create a new Isolate and make it the current one.
-    v8::Isolate::CreateParams create_params;
-    create_params.array_buffer_allocator =
-        v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-    isolate = v8::Isolate::New(create_params);
-    {
-        v8::Isolate::Scope isolate_scope(isolate);
-        // Create a stack-allocated handle scope.
-        v8::HandleScope handle_scope(isolate);
-        // Create a new context.
-        v8::Local<v8::Context> context = v8::Context::New(isolate);
-        // Enter the context for compiling and running the hello world script.
-        v8::Context::Scope context_scope(context);
-        {
-			std::vector<char> code;
-			readAllBytes("example.js", code);
-			code.push_back('\0');
-			auto cdata = compileCode(code.data());
-			runBytecode(const_cast<uint8_t*>(cdata->data), cdata->length);
-        }
-    }
-    // Dispose the isolate and tear down V8.
-    isolate->Dispose();
-    v8::V8::Dispose();
-    delete create_params.array_buffer_allocator;
-    return 0;
 }
