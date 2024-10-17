@@ -10,7 +10,7 @@ add_definitions(-DV8_COMPRESS_POINTERS -DV8_ENABLE_SANDBOX -D_ITERATOR_DEBUG_LEV
 # remove_definitions(-DV8_COMPRESS_POINTERS -DV8_ENABLE_SANDBOX) # 用于取消不需要的宏定义，从而和 V8 的编译条件保持一致
 
 set_property(TARGET re_crack_v8_bytecode PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-target_link_directories(re_crack_v8_bytecode PRIVATE "./v8/v8/out/x64.$<IF:$<CONFIG:DEBUG>,debug,release>.ptrc/obj")
+target_link_directories(re_crack_v8_bytecode PRIVATE "./v8/v8/out/x64.$<IF:$<CONFIG:DEBUG>,debug,release>/obj")
 target_link_libraries(re_crack_v8_bytecode v8_libbase.lib v8_libplatform.lib wee8.lib)
 target_link_libraries(re_crack_v8_bytecode secur32.lib winmm.lib dmoguids.lib wmcodecdspuuid.lib msdmo.lib Strmiids.lib DbgHelp.lib)
 
