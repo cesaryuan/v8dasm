@@ -16,8 +16,7 @@
 #pragma comment(lib, "msdmo.lib")
 #pragma comment(lib, "Strmiids.lib")
 #pragma comment(lib, "DbgHelp.lib")
-// 为了解决 error LNK2001 : 无法解析的外部符号 _calloc_dbg
-//#pragma comment(lib, "libucrtd.lib")
+
 using namespace v8;
 
 static Isolate* isolate = nullptr;
@@ -37,13 +36,13 @@ static void fixBytecode(uint8_t* bytecodeBuffer, const char* code) {
 	// Copy version hash, source hash and flag hash from dummy bytecode to source bytecode.
 	// Offsets of these value may differ in different version of V8.
 	// Refer V8 src/snapshot/code-serializer.h for details.
-	for (int i = 4; i < 16; i++) {
+	for (int i = 4;i < 16;i++) {
 		bytecodeBuffer[i] = dummyBytecode->data[i];
 	}
 	delete dummyBytecode;
 }
 
-static void runBytecode(uint8_t* bytecodeBuffer, int len) {
+static void runBytecode(uint8_t* bytecodeBuffer,int len) {
 	// Compile some dummy code to get version hash, source hash and flag hash.
 	const char* code = "1111";
 	fixBytecode(bytecodeBuffer, code);
@@ -52,7 +51,7 @@ static void runBytecode(uint8_t* bytecodeBuffer, int len) {
 	auto cached_data = new ScriptCompiler::CachedData(bytecodeBuffer, len);
 
 	// Create dummy source.
-	ScriptOrigin origin(isolate, String::NewFromUtf8Literal(isolate, "code.jsc"));
+	ScriptOrigin origin(isolate, String::NewFromUtf8Literal(isolate,"code.jsc"));
 	ScriptCompiler::Source source(String::NewFromUtf8(isolate, code).ToLocalChecked(), origin, cached_data);
 
 	// Compile code from code cache to print disassembly.
@@ -60,8 +59,8 @@ static void runBytecode(uint8_t* bytecodeBuffer, int len) {
 		ScriptCompiler::CompileUnboundScript(isolate, &source, ScriptCompiler::kConsumeCodeCache);
 }
 
-static void readAllBytes(const std::string& file, std::vector<char>& buffer) {
-	std::ifstream infile(file, std::ifstream::binary);
+static void readAllBytes(const std::string& file, std::vector<char> &buffer) {
+	std::ifstream infile(file,std::ifstream::binary);
 
 	infile.seekg(0, infile.end);
 	size_t length = infile.tellg();
@@ -73,7 +72,7 @@ static void readAllBytes(const std::string& file, std::vector<char>& buffer) {
 	}
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	// Set flags here, flags that affects code generation and seririalzation should be same as the target program.
 	// You can add other flags freely because flag hash will be overrided in fixBytecode().
@@ -106,5 +105,4 @@ int main(int argc, char* argv[])
 		// auto cdata = compileCode(code.data());
 		// runBytecode(const_cast<uint8_t*>(cdata->data), cdata->length);
 	}
-	return 0;
 }
